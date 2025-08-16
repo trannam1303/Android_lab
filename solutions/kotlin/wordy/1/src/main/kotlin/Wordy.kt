@@ -1,0 +1,22 @@
+object Wordy {
+
+    val exp = "What is (-?[0-9]+)( (plus|minus|multiplied by|divided by) (-?[0-9]+)| raised to the ([0-9]+)th power)*[?]".toRegex()
+    val opx = "(plus|minus|multiplied by|divided by) (-?[0-9]+)|(raised to) the ([0-9]+)th power".toRegex()
+
+    fun answer(input: String): Int {
+
+        val init = exp.find(input)?.groupValues?.get(1)?.toInt() ?: throw Exception()
+        val operations = opx.findAll(input).map(MatchResult::groupValues)
+
+        return operations.fold(init) { acc, op ->
+            when (op[1]) {
+                "plus"          -> acc + op[2].toInt()
+                "minus"         -> acc - op[2].toInt()
+                "multiplied by" -> acc * op[2].toInt()
+                "divided by"    -> acc / op[2].toInt()
+                else            -> List(op.last().toInt()) { acc }.reduce(Int::times)
+            }
+        }
+
+    }
+}
